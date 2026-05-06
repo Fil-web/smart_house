@@ -12,6 +12,13 @@
 docker compose up -d --build
 ```
 
+Автоматическая настройка Raspberry Pi:
+
+```bash
+chmod +x scripts/setup_raspberry.sh
+./scripts/setup_raspberry.sh
+```
+
 Панель будет доступна по адресу:
 
 ```text
