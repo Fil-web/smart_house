@@ -1,0 +1,16 @@
+services:
+  smart-home:
+    build: .
+    container_name: py-smart-home
+    restart: unless-stopped
+    environment:
+      APP_NAME: "Py Smart Home"
+      DATA_DIR: "/data"
+      PORT: "8000"
+    ports:
+      - "8000:8000"
+    volumes:
+      - smart_home_data:/data
+
+volumes:
+  smart_home_data:

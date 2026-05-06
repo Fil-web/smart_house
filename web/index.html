@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Py Smart Home</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <p class="eyebrow">Raspberry Pi controller</p>
+          <h1>Py Smart Home</h1>
+        </div>
+        <button id="refresh" type="button">Обновить</button>
+      </header>
+
+      <section class="panel">
+        <h2>Устройства</h2>
+        <div id="devices" class="grid"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Сцены</h2>
+        <div id="scenes" class="scene-row"></div>
+      </section>
+
+      <section class="panel">
+        <h2>События</h2>
+        <div id="events" class="events"></div>
+      </section>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>
