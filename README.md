@@ -66,7 +66,7 @@ python3 -m app.cli --url http://localhost:8000 run-scene evening
 
 ```bash
 sudo apt update
-sudo apt install -y bluez alsa-utils pulseaudio-utils
+sudo apt install -y bluez pi-bluetooth alsa-utils pulseaudio-utils
 sudo systemctl enable --now bluetooth
 ```
 
@@ -80,6 +80,18 @@ sudo systemctl enable --now bluetooth
 
 ```bash
 python3 scripts/alice_speaker.py scan
+```
+
+Если сканирование пишет `No default controller available`, Raspberry Pi не видит Bluetooth-адаптер. Запустить диагностику:
+
+```bash
+python3 scripts/alice_speaker.py doctor
+```
+
+Попробовать включить адаптер и перезапустить службы:
+
+```bash
+python3 scripts/alice_speaker.py unblock
 ```
 
 Подключить по MAC-адресу из вывода сканирования:

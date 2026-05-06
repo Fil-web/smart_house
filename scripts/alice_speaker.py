@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import math
+import os
 import shutil
 import subprocess
 import tempfile
@@ -12,6 +13,20 @@ from pathlib import Path
 def run(command: list[str], check: bool = True) -> subprocess.CompletedProcess[str]:
     print("+ " + " ".join(command))
     return subprocess.run(command, check=check, text=True, capture_output=True)
+
+
+def print_command(command: list[str]) -> None:
+    if shutil.which(command[0]) is None:
+        print(f"+ {' '.join(command)}")
+        print(f"missing command: {command[0]}")
+        return
+    result = run(command, check=False)
+    output = result.stdout.strip()
+    error = result.stderr.strip()
+    if output:
+        print(output)
+    if error:
+        print(error)
 
 
 def require(command: str) -> None:
@@ -74,6 +89,28 @@ def status() -> None:
     bluetoothctl("show", "devices", check=False)
 
 
+def unblock() -> None:
+    print_command(["sudo", "rfkill", "unblock", "bluetooth"])
+    print_command(["sudo", "systemctl", "restart", "bluetooth"])
+    if shutil.which("systemctl") is not None:
+        print_command(["sudo", "systemctl", "restart", "hciuart"])
+    status()
+
+
+def doctor() -> None:
+    print(f"user: {os.getenv('USER', 'unknown')}")
+    print_command(["uname", "-a"])
+    print_command(["bluetoothctl", "list"])
+    print_command(["bluetoothctl", "show"])
+    print_command(["rfkill", "list"])
+    print_command(["systemctl", "--no-pager", "status", "bluetooth"])
+    print_command(["systemctl", "--no-pager", "status", "hciuart"])
+    print_command(["lsusb"])
+    print_command(["ls", "-la", "/sys/class/bluetooth"])
+    print_command(["sh", "-c", "grep -R \"disable-bt\\|miniuart-bt\" /boot/config.txt /boot/firmware/config.txt 2>/dev/null || true"])
+    print_command(["sh", "-c", "dmesg | grep -i -E 'bluetooth|hci|uart' | tail -40"])
+
+
 def make_tone(path: Path, seconds: float = 1.5, frequency: int = 880) -> None:
     sample_rate = 44_100
     amplitude = 18_000
@@ -117,6 +154,8 @@ def main() -> None:
     connect_parser.add_argument("address")
 
     subcommands.add_parser("status", help="Show adapter and known devices")
+    subcommands.add_parser("unblock", help="Unblock Bluetooth and restart services")
+    subcommands.add_parser("doctor", help="Print Raspberry Pi Bluetooth diagnostics")
     subcommands.add_parser("test", help="Play a short test tone")
 
     args = parser.parse_args()
@@ -128,6 +167,10 @@ def main() -> None:
         connect(args.address)
     elif args.command == "status":
         status()
+    elif args.command == "unblock":
+        unblock()
+    elif args.command == "doctor":
+        doctor()
     elif args.command == "test":
         test_sound()
 
